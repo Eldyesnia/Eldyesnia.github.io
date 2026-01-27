@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>水质监测数据大屏</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="echarts.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <!-- 顶部标题区，像国博的展厅名牌 -->
+    <header class="header">
+        <h1>水质采集及数据汇总信息</h1>
+        <div class="time" id="currentTime">2026年1月27日 12:05:48</div>
+    </header>
+
+    <!-- 主要内容区，像国博的展厅布局 -->
+    <main class="container">
+        <!-- 第一排：4个数据卡片 -->
+        <div class="card-row">
+            <div class="data-card">
+                <h3>PH值</h3>
+                <div class="big-number">
+                    <input type="number" id="phValue" value="108" class="editable-input">
+                </div>
+            </div>
+            <div class="data-card">
+                <h3>浊度 (NTU)</h3>
+                <div class="big-number">
+                    <input type="number" id="turbidity" value="180" class="editable-input">
+                </div>
+            </div>
+            <div class="data-card">
+                <h3>采样点数量</h3>
+                <div class="big-number">10</div>
+            </div>
+            <div class="data-card">
+                <h3>采样成分分析种类</h3>
+                <div class="big-number">150</div>
+            </div>
+        </div>
+
+        <!-- 第二排：地图和图表 -->
+        <div class="chart-row">
+            <div class="chart-box">
+                <h3>水质样本采集点</h3>
+                <div id="mapChart" class="chart"></div>
+            </div>
+            <div class="chart-box">
+                <h3>TOC以及叶绿素a</h3>
+                <div id="tocChart" class="chart"></div>
+            </div>
+        </div>
+
+        <!-- 第三排：更多图表 -->
+        <div class="chart-row">
+            <div class="chart-box">
+                <h3>硝态氮及亚硝酸</h3>
+                <div id="nitrogenChart" class="chart"></div>
+            </div>
+            <div class="chart-box">
+                <h3>采样点分布</h3>
+                <div id="pieChart" class="chart"></div>
+            </div>
+        </div>
+
+        <!-- 第四排：底部信息 -->
+        <div class="info-row">
+            <div class="survey-box">
+                <h3>关于农业面源污染的调查问卷(%)</h3>
+                <div id="surveyChart" class="chart"></div>
+            </div>
+            <div class="image-gallery">
+                <h3>相关图片报道</h3>
+                <div class="gallery-grid">
+                    <a href="https://example.com/news1" target="_blank">
+                        <img src="https://picsum.photos/200/150?random=1" alt="报道1">
+                    </a>
+                    <a href="https://example.com/news2" target="_blank">
+                        <img src="https://picsum.photos/200/150?random=2" alt="报道2">
+                    </a>
+                    <a href="https://example.com/news3" target="_blank">
+                        <img src="https://picsum.photos/200/150?random=3" alt="报道3">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 更新时间
+        function updateTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('currentTime').textContent = timeStr;
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // 所有图表配置
+        // 1. 地图（简化版）
+        const mapChart = echarts.init(document.getElementById('mapChart'));
+        const mapOption = {
+            backgroundColor: 'transparent',
+            series: [{
+                type: 'scatter',
+                coordinateSystem: 'geo',
+                data: [
+                    {name: '样点1', value: [116.4, 39.9, 100]},
+                    {name: '样点12', value: [116.5, 39.8, 80]},
+                    {name: '样点23', value: [116.3, 39.7, 60]}
+                ],
+                symbolSize: function (val) {
+                    return val[2] / 5;
+                },
+                itemStyle: {
+                    color: '#00f2f1'
+                }
+            }],
+            geo: {
+                map: 'china',
+                roam: true,
+                itemStyle: {
+                    areaColor: 'rgba(1, 20, 60, 0.5)',
+                    borderColor: '#00f2f1'
+                }
+            }
+        };
+        // 使用简化的中国地图
+        echarts.registerMap('china', {"type":"FeatureCollection","features":[{"type":"Feature","properties":{"name":"中国"},"geometry":{"type":"Polygon","coordinates":[[[73.5,53.5],[134.8,53.5],[134.8,18.2],[73.5,18.2],[73.5,53.5]]]}}]});
+        mapChart.setOption(mapOption);
+
+        // 2. TOC图表
+        const tocChart = echarts.init(document.getElementById('tocChart'));
+        const tocOption = {
+            tooltip: { trigger: 'axis' },
+            legend: { data: ['TOC', '叶绿素a'], textStyle: { color: '#fff' } },
+            xAxis: { type: 'category', data: ['样点1', '样点12', '样点23', '样点34', '样点45'] },
+            yAxis: { type: 'value', name: 'μg/ml' },
+            series: [
+                {name: 'TOC', type: 'bar', data: [18, 15, 12, 9, 6], itemStyle: {color: '#5470c6'}},
+                {name: '叶绿素a', type: 'line', data: [300, 250, 200, 150, 100], yAxisIndex: 0, itemStyle: {color: '#91cc75'}}
+            ]
+        };
+        tocChart.setOption(tocOption);
+
+        // 3. 硝态氮图表
+        const nitrogenChart = echarts.init(document.getElementById('nitrogenChart'));
+        const nitrogenOption = {
+            tooltip: { trigger: 'axis' },
+            legend: { data: ['硝态氮', '亚硝酸'], textStyle: { color: '#fff' } },
+            xAxis: { type: 'category', data: ['样点1', '样点12', '样点23', '样点34', '样点45'] },
+            yAxis: { type: 'value', name: 'mg/L' },
+            series: [
+                {name: '硝态氮', type: 'bar', data: [5.5, 4.4, 3.3, 2.2, 1.1], itemStyle: {color: '#5470c6'}},
+                {name: '亚硝酸', type: 'bar', data: [0.5, 0.4, 0.3, 0.2, 0.1], itemStyle: {color: '#91cc75'}}
+            ]
+        };
+        nitrogenChart.setOption(nitrogenOption);
+
+        // 4. 饼图
+        const pieChart = echarts.init(document.getElementById('pieChart'));
+        const pieOption = {
+            tooltip: { trigger: 'item' },
+            series: [{
+                type: 'pie',
+                radius: '60%',
+                data: [
+                    {value: 18, name: '样点1'},
+                    {value: 15, name: '样点12'},
+                    {value: 12, name: '样点23'},
+                    {value: 9, name: '样点34'}
+                ],
+                itemStyle: { color: function(params) {
+                    const colors = ['#00f2f1', '#00c0ff', '#0066ff', '#00ffcc'];
+                    return colors[params.dataIndex];
+                }}
+            }]
+        };
+        pieChart.setOption(pieOption);
+
+        // 5. 调查问卷柱状图
+        const surveyChart = echarts.init(document.getElementById('surveyChart'));
+        const surveyOption = {
+            tooltip: { trigger: 'axis' },
+            xAxis: { type: 'value', max: 100 },
+            yAxis: { type: 'category', data: ['种植业', '畜禽养殖业', '水产养殖', '其他'] },
+            series: [{
+                type: 'bar',
+                data: [35, 28, 22, 15],
+                itemStyle: { color: '#00f2f1' }
+            }]
+        };
+        surveyChart.setOption(surveyOption);
+
+        // 响应式调整
+        window.addEventListener('resize', function() {
+            mapChart.resize();
+            tocChart.resize();
+            nitrogenChart.resize();
+            pieChart.resize();
+            surveyChart.resize();
+        });
+    </script>// 每5秒随机更新数据
+setInterval(() => {
+    document.getElementById('phValue').value = (Math.random() * 200).toFixed(0);
+}, 5000);
+</body>
+</html>
