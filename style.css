@@ -1,3 +1,6 @@
+/* 引入国博风格字体 - 移至顶部确保加载优先级 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap');
+
 /* 全局样式 - 像国博的基调 */
 * {
     margin: 0;
@@ -6,7 +9,7 @@
 }
 
 body {
-    font-family: 'Microsoft YaHei', Arial, sans-serif;
+    font-family: 'Noto Serif SC', 'Microsoft YaHei', Arial, sans-serif;
     background: linear-gradient(135deg, #0a1929 0%, #0c2a4a 100%);
     color: #ffffff;
     overflow-x: hidden;
@@ -147,7 +150,7 @@ body {
     display: none;  /* 隐藏顶部标题 */
 }
 
-/* 替换你的 .gallery-grid 和 .gallery-grid img */
+/* 图片画廊核心样式 - 实现hover/触屏显示标题+蓝色底光 */
 .gallery-grid {
     display: flex;
     flex-wrap: nowrap;  /* 强制一行 */
@@ -155,14 +158,13 @@ body {
     overflow-x: auto;  /* 横向滚动 */
     padding: 10px 0 20px 0;  /* 上下留空间 */
     scroll-behavior: smooth;  /* 平滑滚动 */
+    /* 修复滚动条样式 */
 }
-
-/* 隐藏滚动条（可选，看起来更简洁） */
 .gallery-grid::-webkit-scrollbar {
     height: 8px;
 }
 .gallery-grid::-webkit-scrollbar-track {
-    background: rgba(255,255,255,255,0.1);
+    background: rgba(255,255,255,0.1); /* 修正rgba多逗号错误 */
     border-radius: 4px;
 }
 .gallery-grid::-webkit-scrollbar-thumb {
@@ -170,14 +172,25 @@ body {
     border-radius: 4px;
 }
 
+/* 图片卡片容器 - 关键：添加relative定位 + 触屏适配 */
 .gallery-grid a {
-    flex: 0 0 auto;  /* 关键：不伸缩 */
-    width: 220px;  /* 固定卡片宽度 */
-    transition: transform 0.3s ease;
+    flex: 0 0 auto;  /* 不伸缩 */
+    width: 220px;  /* 固定宽度 */
+    position: relative; /* 让标题绝对定位生效 */
+    transition: all 0.3s ease; /* 过渡动画 */
+    touch-action: manipulation; /* 优化移动端触屏 */
+    border-radius: 8px; /* 与图片圆角统一 */
+    overflow: hidden; /* 防止标题溢出 */
 }
 
-.gallery-grid a:hover {
-    transform: translateY(-5px) scale(1.03);  /* 悬停效果 */
+/* hover/触屏激活效果：上浮+蓝色底光+缩放 */
+.gallery-grid a:hover,
+.gallery-grid a:active, /* 移动端触屏点击 */
+.gallery-grid a:focus { /* 键盘聚焦 */
+    transform: translateY(-5px) scale(1.03);
+    box-shadow: 0 0 25px rgba(0, 242, 241, 0.4), /* 蓝色底光核心 */
+                0 12px 40px rgba(0, 0, 0, 0.2);
+    outline: none; /* 去掉聚焦轮廓 */
 }
 
 .gallery-grid img {
@@ -186,22 +199,76 @@ body {
     object-fit: cover;
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: filter 0.3s ease; /* 图片滤镜过渡 */
 }
 
+/* hover时图片轻微提亮，增强视觉层次 */
+.gallery-grid a:hover img {
+    filter: contrast(1.1) brightness(1.02);
+}
+
+/* 图片标题 - 默认隐藏，hover时显示 */
 .gallery-title {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0,0.8), transparent);
+    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); /* 修正rgba多逗号错误 */
     color: white;
     padding: 15px 10px 10px;
     font-size: 14px;
     text-align: center;
-    backdrop-filter: blur(5px);  /* 毛玻璃效果 */
+    backdrop-filter: blur(8px); /* 增强毛玻璃效果 */
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    /* 默认隐藏 */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px); /* 下移隐藏，hover时上移 */
+    transition: all 0.3s ease; /* 过渡动画更丝滑 */
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5); /* 文字加阴影更清晰 */
 }
 
-/* 响应式设计 - 手机也能看 */
+/* hover/触屏时显示标题 */
+.gallery-grid a:hover .gallery-title,
+.gallery-grid a:active .gallery-title,
+.gallery-grid a:focus .gallery-title {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* 展览/藏品卡片优化：更贴合文博质感 */
+.exhibition-card, .collection-item {
+    background-color: #fff;
+    border: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.8); /* 修正rgba多逗号错误 */
+}
+
+/* 图片加轻微暗角，模拟博物馆展柜效果 */
+.exhibition-card img, .collection-item img {
+    filter: contrast(1.05) brightness(0.98);
+}
+
+/* 按钮样式 */
+.btn {
+    display: inline-block;
+    padding: 0.8rem 2rem;
+    background-color: #C8102E;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 0; /* 国博风格直角 */
+    font-family: 'Noto Serif SC', serif;
+    transition: background-color 0.3s;
+    margin-top: 1rem;
+}
+
+.btn:hover {
+    background-color: #A00C24;
+    color: #fff; /* 修正原错误颜色值 */
+}
+
+/* 响应式设计 - 手机适配 */
 @media (max-width: 768px) {
     .header h1 {
         font-size: 24px;
@@ -216,65 +283,33 @@ body {
     }
     
     .gallery-grid {
-        grid-template-columns: 1fr;
+        padding: 10px;
     }
-}
-@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap');
-body {
-    font-family: 'Noto Serif SC', 'Microsoft YaHei', serif;
-}
-/* 展览/藏品卡片优化：更贴合文博质感 */
-.exhibition-card, .collection-item {
-    background-color: #fff;
-    border: none;
-    box-shadow: 0 4px 15px rgba(0,0,0,0,0.8); /* 更柔和的阴影 */
-}
+    .gallery-grid a {
+        width: 180px; /* 手机端缩小卡片 */
+    }
 
-/* 图片加轻微暗角，模拟博物馆展柜效果 */
-.exhibition-card img, .collection-item img {
-    filter: contrast(1.05) brightness(0.98);
-}
-
-/* 按钮样式（如果后续加按钮，提前适配） */
-.btn {
-    display: inline-block;
-    padding: 0.8rem 2rem;
-    background-color: #C8102E;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 0; /* 国博风格用直角按钮，更庄重 */
-    font-family: 'Noto Serif SC', serif;
-    transition: background-color 0.3s;
-    margin-top: 1rem;
-}
-
-.btn:hover {
-    background-color: #A00C24; /* 深色红，hover效果 */
-    color: #4B16A;
-}
-
-/* 响应式优化：手机端适配 */
-@media (max-width: 768px) {
     .nav-menu {
-        flex-direction: column; /* 手机端菜单竖排 */
+        flex-direction: column;
         position: absolute;
         top: 70px;
         left: 0;
         width: 100%;
         background-color: #C8102E;
         padding: 1rem 0;
-        display: none; /* 默认隐藏，后续可加JS控制显示 */
+        display: none;
     }
 
     .nav-menu li {
         margin: 0.5rem 2rem;
+        list-style: none;
     }
 
     .banner-content h1 {
-        font-size: 2rem; /* 手机端标题缩小 */
+        font-size: 2rem;
     }
 
     .section {
-        padding: 2rem 0; /* 手机端区块间距缩小 */
+        padding: 2rem 0;
     }
 }
