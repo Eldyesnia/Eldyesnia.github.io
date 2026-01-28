@@ -144,35 +144,61 @@ body {
 }
 
 .image-gallery h3 {
-    font-size: 20px;
-    margin-bottom: 20px;
-    color: #ffffff;
-    border-left: 4px solid #00f2f1;
-    padding-left: 15px;
+    display: none;  /* 隐藏顶部标题 */
 }
 
+/* 替换你的 .gallery-grid 和 .gallery-grid img */
 .gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
+    display: flex;
+    flex-wrap: nowrap;  /* 强制一行 */
+    gap: 20px;
+    overflow-x: auto;  /* 横向滚动 */
+    padding: 10px 0 20px 0;  /* 上下留空间 */
+    scroll-behavior: smooth;  /* 平滑滚动 */
+}
+
+/* 隐藏滚动条（可选，看起来更简洁） */
+.gallery-grid::-webkit-scrollbar {
+    height: 8px;
+}
+.gallery-grid::-webkit-scrollbar-track {
+    background: rgba(255,255,255,255,0.1);
+    border-radius: 4px;
+}
+.gallery-grid::-webkit-scrollbar-thumb {
+    background: #00f2f1;
+    border-radius: 4px;
+}
+
+.gallery-grid a {
+    flex: 0 0 auto;  /* 关键：不伸缩 */
+    width: 220px;  /* 固定卡片宽度 */
+    transition: transform 0.3s ease;
+}
+
+.gallery-grid a:hover {
+    transform: translateY(-5px) scale(1.03);  /* 悬停效果 */
 }
 
 .gallery-grid img {
     width: 100%;
-    height: 150px;
+    height: 160px;
     object-fit: cover;
     border-radius: 8px;
-    transition: transform 0.3s ease;
-    border: 1px solid rgba(0, 242, 241, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
-.gallery-grid img:hover {
-    transform: scale(1.05);
-    box-shadow: 0 5px 15px rgba(0, 242, 241, 0.3);
-}
-
-.gallery-grid a {
-    text-decoration: none;
+.gallery-title {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0,0.8), transparent);
+    color: white;
+    padding: 15px 10px 10px;
+    font-size: 14px;
+    text-align: center;
+    backdrop-filter: blur(5px);  /* 毛玻璃效果 */
 }
 
 /* 响应式设计 - 手机也能看 */
@@ -196,4 +222,59 @@ body {
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap');
 body {
     font-family: 'Noto Serif SC', 'Microsoft YaHei', serif;
+}
+/* 展览/藏品卡片优化：更贴合文博质感 */
+.exhibition-card, .collection-item {
+    background-color: #fff;
+    border: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0,0.8); /* 更柔和的阴影 */
+}
+
+/* 图片加轻微暗角，模拟博物馆展柜效果 */
+.exhibition-card img, .collection-item img {
+    filter: contrast(1.05) brightness(0.98);
+}
+
+/* 按钮样式（如果后续加按钮，提前适配） */
+.btn {
+    display: inline-block;
+    padding: 0.8rem 2rem;
+    background-color: #C8102E;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 0; /* 国博风格用直角按钮，更庄重 */
+    font-family: 'Noto Serif SC', serif;
+    transition: background-color 0.3s;
+    margin-top: 1rem;
+}
+
+.btn:hover {
+    background-color: #A00C24; /* 深色红，hover效果 */
+    color: #4B16A;
+}
+
+/* 响应式优化：手机端适配 */
+@media (max-width: 768px) {
+    .nav-menu {
+        flex-direction: column; /* 手机端菜单竖排 */
+        position: absolute;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        background-color: #C8102E;
+        padding: 1rem 0;
+        display: none; /* 默认隐藏，后续可加JS控制显示 */
+    }
+
+    .nav-menu li {
+        margin: 0.5rem 2rem;
+    }
+
+    .banner-content h1 {
+        font-size: 2rem; /* 手机端标题缩小 */
+    }
+
+    .section {
+        padding: 2rem 0; /* 手机端区块间距缩小 */
+    }
 }

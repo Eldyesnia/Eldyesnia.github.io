@@ -4,83 +4,101 @@
     <meta charset="utf-8">
     <title>水质监测数据大屏</title>
     <link rel="stylesheet" href="style.css">
-    <script src="echarts.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- 只保留一个ECharts引入 -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    
+    <!-- 高德地图 -->
+    <script src="https://webapi.amap.com/maps?v=2.0&key=55c96dee656c5ee95d56676719130281"></script>
+    
+    <!-- ECharts GL扩展 -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/extension/echarts-gl.min.js"></script>
 </head>
+
 <body>
-    <!-- 顶部标题区，像国博的展厅名牌 -->
     <header class="header">
         <h1>水质采集及数据汇总信息</h1>
-        <div class="time" id="currentTime">2026年1月27日 12:05:48</div>
+        <div class="time" id="currentTime"></div>
     </header>
 
-    <!-- 主要内容区，像国博的展厅布局 -->
     <main class="container">
-        <!-- 第一排：4个数据卡片 -->
+        <!-- 数据卡片 -->
         <div class="card-row">
             <div class="data-card">
                 <h3>PH值</h3>
                 <div class="big-number">
-                    <input type="number" id="phValue" value="108" class="editable-input">
+                    <input type="number" id="phValue" value="7.2" class="editable-input">
                 </div>
             </div>
             <div class="data-card">
                 <h3>浊度 (NTU)</h3>
                 <div class="big-number">
-                    <input type="number" id="turbidity" value="180" class="editable-input">
+                    <input type="number" id="turbidity" value="45" class="editable-input">
                 </div>
             </div>
             <div class="data-card">
                 <h3>采样点数量</h3>
-                <div class="big-number">10</div>
+                <div class="big-number" id="sampleCount">0</div>
             </div>
             <div class="data-card">
-                <h3>采样成分分析种类</h3>
-                <div class="big-number">150</div>
+                <h3>样品种类</h3>
+                <div class="big-number" id="sampleTypes">0</div>
             </div>
         </div>
 
-        <!-- 第二排：地图和图表 -->
+        <!-- 地图 -->
         <div class="chart-row">
             <div class="chart-box">
                 <h3>水质样本采集点</h3>
                 <div id="mapChart" class="chart"></div>
             </div>
             <div class="chart-box">
-                <h3>TOC以及叶绿素a</h3>
-                <div id="tocChart" class="chart"></div>
-            </div>
-        </div>
-
-        <!-- 第三排：更多图表 -->
-        <div class="chart-row">
-            <div class="chart-box">
-                <h3>硝态氮及亚硝酸</h3>
-                <div id="nitrogenChart" class="chart"></div>
-            </div>
-            <div class="chart-box">
-                <h3>采样点分布</h3>
+                <h3>采样点分布统计</h3>
                 <div id="pieChart" class="chart"></div>
             </div>
         </div>
 
-        <!-- 第四排：底部信息 -->
-        <div class="info-row">
-            <div class="survey-box">
-                <h3>关于农业面源污染的调查问卷(%)</h3>
-                <div id="surveyChart" class="chart"></div>
+        <!-- 更多图表 -->
+        <div class="chart-row">
+            <div class="chart-box">
+                <h3>各类型样品数量</h3>
+                <div id="barChart" class="chart"></div>
             </div>
+            <div class="chart-box">
+                <h3>PH值分布</h3>
+                <div id="phChart" class="chart"></div>
+            </div>
+        </div>
+
+        <!-- 图片展示 -->
+        <div class="info-row">
             <div class="image-gallery">
                 <h3>相关图片报道</h3>
                 <div class="gallery-grid">
-                    <a href="https://example.com/news1" target="_blank">
-                        <img src="https://picsum.photos/200/150?random=1" alt="报道1">
+                   <a href="https://xiaoyuan.cycnet.com.cn/s?uid=8904643&app_version=1.6.2&sid=1648177&time=1756194471&signature=qP9pJjlO2MYzBWndV0karJzMjclboEma5bxer3EwLKA6RG8yvX&sign=3561be37cb93c372eee76cd4b825bc05#" target="_blank">
+                        <img src="https://img.cycnet.com.cn/article/202508/09/098/6897513cf1b0bod.jpg?x-process=image&resize=w_800&orient=1&water=1&fmt=jpg" alt="报道1">
+                        <div class="gallery-title">青春赋能乡村振兴：高校实践团探秘西安市鄠邑区废弃物资源化利用之路</div>
                     </a>
-                    <a href="https://example.com/news2" target="_blank">
-                        <img src="https://picsum.photos/200/150?random=2" alt="报道2">
+                    <a href="https://www.cinn.cn/2025/09-01/xDLe9jJk.html" target="_blank">
+                        <img src="https://oss.cinn.cn/fs/upload/20250831/u29/12391390a5e43a817db89a6e8b7fbb3e.jpeg" alt="报道2">
+                        <div class="gallery-title">环境青年 “五阶解码” 关中农废：以专业之力护佑渭水流域绿色发展</div>
                     </a>
-                    <a href="https://example.com/news3" target="_blank">
-                        <img src="https://picsum.photos/200/150?random=3" alt="报道3">
+                    <a href="https://www.dxsyb.com/paper/2025/0728/756318.html?t=2455" target="_blank">
+                        <img src="https://cdn.zhaolinlang.com/dxsyb/public/uploads/news/20250728/1614324nVBPdom.jpg_750x10000x1.webp" alt="报道3">
+                        <div class="gallery-title">西安建筑科技大学环境学院“渭水清源，绿动关中”暑期社会实践团赴西安市临潼区开展低碳农业转型发展调研活动</div>
+                    </a>
+                    <a href="https://cn.jcwzg.com/detail/20250830/11112/31412/1756537106.html?from=qr" target="_blank">
+                        <img src="https://www.jcwzg.com/public/uploads/docx/20250830/24132c0018e23593.jpg_750x10000x1.webp" alt="报道4">
+                        <div class="gallery-title">叩户、聚智、溯源、探效、问策！环境青年 “五阶解码” 关中农废：以专业之力护佑渭水流域绿色发展</div>
+                    </a>
+                    <a href="https://cussp.net/index.php?m=home&c=View&a=index&aid=1844" target="_blank">
+                        <img src="https://cussp.net/uploads/allimg/20250830/1-250S01A541H0.png" alt="报道5">
+                        <div class="gallery-title">叩户、聚智、溯源、探效、问策！环境青年 “五阶解码” 关中农废：以专业之力护佑渭水流域绿色发展</div>
+                    </a>
+                    <a href="https://mbd.baidu.com/newspage/data/landingsuper?sShare=1&context=%7B%22nid%22%3A%22news_9593687797803456330%22,%22sourceFrom%22%3A%22bjh%22%7D" target="_blank">
+                        <img src="https://pics7.baidu.com/feed/10dfa9ec8a1363276aba0fae5610c4fc09fac70c.jpeg@f_auto?token=d715e1d704162778167396b107bd68d5" alt="报道6">
+                        <div class="gallery-title">叩户、聚智、溯源、探效、问策！环境青年 “五阶解码” 关中农废：以专业之力护佑渭水流域绿色发展</div>
                     </a>
                 </div>
             </div>
@@ -88,129 +106,211 @@
     </main>
 
     <script>
-        // 更新时间
+        // ===== 1. 时间更新 =====
         function updateTime() {
             const now = new Date();
             const timeStr = now.toLocaleString('zh-CN', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
+                year: 'numeric', month: 'long', day: 'numeric',
+                hour: '2-digit', minute: '2-digit', second: '2-digit'
             });
             document.getElementById('currentTime').textContent = timeStr;
         }
         setInterval(updateTime, 1000);
         updateTime();
 
-        // 所有图表配置
-        // 1. 地图（简化版）
+        // ===== 2. 采样点数据 =====
+       const samplingPoints = [
+    // 西安市临潼区交口街道
+    { name: '念杨村鸡粪', value: [109.280190, 34.539442, 85], type: '粪便', ph: 7.2, turbidity: 45 },
+    { name: '交口街道果果农场鹅粪', value: [109.280112, 34.539344, 80], type: '粪便', ph: 7.5, turbidity: 38 },
+    { name: '交口街道果果农场兔粪', value: [109.280222, 34.539437, 75], type: '粪便', ph: 8.0, turbidity: 42 },
+    { name: '陕西省阳光牧业牛粪', value: [109.280297, 34.546607, 60], type: '粪便', ph: 7.1, turbidity: 180 },
+    { name: '陕西省阳光牧业牛饲料', value: [109.280297, 34.546607, 90], type: '饲料', ph: 6.8, turbidity: 5 },
+
+    // 任留街道西口村
+    { name: '西口村还田土', value: [109.181692, 34.387880, 70], type: '土壤', ph: 6.5, turbidity: 15 },
+    { name: '西口村有机肥土', value: [109.181692, 34.387880, 88], type: '土壤', ph: 7.0, turbidity: 12 },
+    { name: '南屯村表层土', value: [109.208126, 34.368179, 65], type: '土壤', ph: 6.2, turbidity: 18 },
+    { name: '南屯村深层土', value: [109.208126, 34.368179, 55], type: '土壤', ph: 6.0, turbidity: 22 },
+
+    // 鄠邑区涝店镇
+    { name: '中南村鸡粪', value: [108.567120, 34.184894, 82], type: '粪便', ph: 7.4, turbidity: 48 },
+    
+    // 鄠邑区庞光街道
+    { name: '新寨村鸡粪', value: [108.567120, 34.184894, 78], type: '粪便', ph: 7.6, turbidity: 40 },
+    
+    // 鄠邑区甘河镇
+    { name: '鄠益美假日生态农庄牛粪', value: [108.482208, 34.164261, 58], type: '粪便', ph: 7.3, turbidity: 175 },
+    { name: '鄠益美假日生态农庄葡萄地', value: [108.483698, 34.165505, 68], type: '土壤', ph: 6.7, turbidity: 20 },
+
+    // 鄠邑区五竹街道
+    { name: '槐道村秸秆', value: [108.633393, 34.169113, 95], type: '秸秆', ph: 7.8, turbidity: 8 },
+    { name: '槐道村西瓜秸秆', value: [108.633393, 34.169113, 92], type: '秸秆', ph: 7.9, turbidity: 6 },
+    { name: '槐道村玉米地土壤', value: [108.637684, 34.169118, 72], type: '土壤', ph: 6.4, turbidity: 16 },
+
+    // 高陵区张卜街道
+    { name: '东关村无机肥土壤', value: [109.158568, 34.496949, 75], type: '土壤', ph: 6.6, turbidity: 14 },
+    { name: '东关村有机肥土壤', value: [109.155957, 34.496972, 85], type: '土壤', ph: 7.1, turbidity: 11 },
+    { name: '东关村鸡粪', value: [109.164124, 34.495256, 80], type: '粪便', ph: 7.5, turbidity: 50 },
+    { name: '东关村羊粪', value: [109.161323, 34.499638, 70], type: '粪便', ph: 8.1, turbidity: 38 },
+    { name: '张家村猪粪', value: [109.145148, 34.474506, 55], type: '粪便', ph: 7.0, turbidity: 160 },
+
+    // 渭南市蒲城县兴镇
+    { name: '曹家村化肥土壤', value: [109.446173, 34.917333, 65], type: '土壤', ph: 5.8, turbidity: 25 },
+    { name: '凯佳养殖场牛粪', value: [109.449897, 34.918138, 60], type: '粪便', ph: 7.2, turbidity: 165 },
+    { name: '曹家村羊粪', value: [109.445225, 34.921365, 75], type: '粪便', ph: 8.0, turbidity: 42 },
+
+    // 三合村
+    { name: '三合村未使用化肥土壤', value: [109.446108, 34.917366, 88], type: '土壤', ph: 6.9, turbidity: 10 },
+
+    // 龙阳镇
+    { name: '店子村玉米地土壤', value: [109.675066, 34.872754, 62], type: '土壤', ph: 5.9, turbidity: 26 },
+    { name: '店子村牛粪', value: [109.675872, 34.868998, 65], type: '粪便', ph: 7.1, turbidity: 170 },
+
+    // 龙池镇
+    { name: '埝城村西瓜地土壤', value: [109.679012, 34.818992, 60], type: '土壤', ph: 6.0, turbidity: 24 },
+
+    // 大荔县羌白镇
+    { name: '阿寿村无机肥土壤', value: [109.880782, 34.737048, 70], type: '土壤', ph: 6.3, turbidity: 13 },
+    { name: '阿寿村猪粪', value: [109.873806, 34.763173, 55], type: '粪便', ph: 6.9, turbidity: 155 },
+
+    // 新桥村
+    { name: '新桥村有机肥土壤', value: [109.880782, 34.737048, 85], type: '土壤', ph: 7.0, turbidity: 9 },
+
+    // 咸阳市兴平市庄头镇
+    { name: '北于村牛粪', value: [108.464829, 34.258483, 58], type: '粪便', ph: 7.3, turbidity: 168 },
+    { name: '北于村驴粪', value: [108.467471, 34.253876, 60], type: '粪便', ph: 7.8, turbidity: 52 },
+    { name: '蔡西村茄子地土壤', value: [108.470000, 34.260000, 72], type: '土壤', ph: 6.8, turbidity: 19 },
+
+    // 西城街道
+    { name: '板桥村羊粪', value: [108.418908, 34.319827, 65], type: '粪便', ph: 8.2, turbidity: 44 },
+
+    // 南市镇
+    { name: '兴平众合牧业猪粪', value: [108.476977, 34.373016, 70], type: '粪便', ph: 7.0, turbidity: 158 },
+    { name: '兴平众合牧业玉米地土壤', value: [108.474435, 34.375423, 75], type: '土壤', ph: 6.5, turbidity: 17 },
+
+    // 杨陵区五泉镇
+    { name: '汤家村牛粪', value: [107.987697, 34.290205, 72], type: '粪便', ph: 7.1, turbidity: 48 },
+
+    // 揉谷镇
+    { name: '除张村发酵羊粪', value: [107.999240, 34.274616, 78], type: '粪便', ph: 8.0, turbidity: 40 },
+    { name: '新集村发酵堆肥', value: [107.984929, 34.282316, 82], type: '堆肥', ph: 7.5, turbidity: 35 },
+    { name: '田西村堆肥样品', value: [108.008402, 34.264142, 80], type: '堆肥', ph: 7.3, turbidity: 38 },
+    { name: '田西村土壤', value: [108.008302, 34.263979, 70], type: '土壤', ph: 6.4, turbidity: 16 },
+
+    // 武功县普集街道
+    { name: '义乐寺村鸭粪', value: [108.192750, 34.226590, 68], type: '粪便', ph: 7.6, turbidity: 46 },
+
+    // 宝鸡市陈仓区周原镇
+    { name: '东王村有机肥土壤', value: [107.413673, 34.399540, 85], type: '土壤', ph: 7.0, turbidity: 12 },
+    { name: '东王村猪粪', value: [107.413631, 34.399539, 60], type: '粪便', ph: 6.8, turbidity: 162 },
+    { name: '东王村牛粪', value: [107.412114, 34.399285, 55], type: '粪便', ph: 7.2, turbidity: 172 },
+    { name: '东王村化肥', value: [107.410000, 34.399000, 90], type: '化肥', ph: 5.5, turbidity: 5 },
+
+    // 慕仪镇
+    { name: '齐西二村鸡粪', value: [107.409716, 34.377930, 73], type: '粪便', ph: 7.4, turbidity: 47 },
+    { name: '齐西二村牛粪', value: [107.407948, 34.378415, 58], type: '粪便', ph: 7.1, turbidity: 165 },
+    { name: '齐东村有机肥土壤', value: [107.445610, 34.383171, 80], type: '土壤', ph: 7.2, turbidity: 12 },
+    { name: '齐东村化肥', value: [107.445773, 34.383253, 65], type: '化肥', ph: 5.6, turbidity: 7 }
+];
+
+        // ===== 3. 更新统计卡片 =====
+        document.getElementById('sampleCount').textContent = samplingPoints.length;
+        const uniqueTypes = [...new Set(samplingPoints.map(p => p.type))];
+        document.getElementById('sampleTypes').textContent = uniqueTypes.length;
+
+        // ===== 4. 初始化地图 =====
         const mapChart = echarts.init(document.getElementById('mapChart'));
         const mapOption = {
-            backgroundColor: 'transparent',
+            tooltip: {
+                trigger: 'item',
+                formatter: params => `<strong>${params.data.name}</strong><br/>
+                                     经度: ${params.data.value[0]}<br/>
+                                     纬度: ${params.data.value[1]}<br/>
+                                     PH: ${params.data.ph}<br/>
+                                     浊度: ${params.data.turbidity} NTU`
+            },
+            amap: {
+                viewMode: '3D',
+                center: [108.5, 34.3],
+                zoom: 8,
+                mapStyle: 'amap://styles/darkblue',
+                roam: true
+            },
             series: [{
                 type: 'scatter',
-                coordinateSystem: 'geo',
-                data: [
-                    {name: '样点1', value: [116.4, 39.9, 100]},
-                    {name: '样点12', value: [116.5, 39.8, 80]},
-                    {name: '样点23', value: [116.3, 39.7, 60]}
-                ],
-                symbolSize: function (val) {
-                    return val[2] / 5;
+                coordinateSystem: 'amap',
+                data: samplingPoints,
+                symbolSize: val => Math.max(15, val[2] / 2),
+                itemStyle: {
+                    color: params => {
+                        const v = params.value[2];
+                        return v > 80 ? '#00f2f1' : v > 60 ? '#ffcc00' : '#ff4444';
+                    }
                 },
-                itemStyle: {
-                    color: '#00f2f1'
+                emphasis: {
+                    itemStyle: { color: '#fff', borderColor: '#00f2f1', borderWidth: 3 }
                 }
-            }],
-            geo: {
-                map: 'china',
-                roam: true,
-                itemStyle: {
-                    areaColor: 'rgba(1, 20, 60, 0.5)',
-                    borderColor: '#00f2f1'
-                }
-            }
+            }]
         };
-        // 使用简化的中国地图
-        echarts.registerMap('china', {"type":"FeatureCollection","features":[{"type":"Feature","properties":{"name":"中国"},"geometry":{"type":"Polygon","coordinates":[[[73.5,53.5],[134.8,53.5],[134.8,18.2],[73.5,18.2],[73.5,53.5]]]}}]});
         mapChart.setOption(mapOption);
 
-        // 2. TOC图表
-        const tocChart = echarts.init(document.getElementById('tocChart'));
-        const tocOption = {
-            tooltip: { trigger: 'axis' },
-            legend: { data: ['TOC', '叶绿素a'], textStyle: { color: '#fff' } },
-            xAxis: { type: 'category', data: ['样点1', '样点12', '样点23', '样点34', '样点45'] },
-            yAxis: { type: 'value', name: 'μg/ml' },
-            series: [
-                {name: 'TOC', type: 'bar', data: [18, 15, 12, 9, 6], itemStyle: {color: '#5470c6'}},
-                {name: '叶绿素a', type: 'line', data: [300, 250, 200, 150, 100], yAxisIndex: 0, itemStyle: {color: '#91cc75'}}
-            ]
-        };
-        tocChart.setOption(tocOption);
+        // ===== 5. 地图点击事件 =====
+        mapChart.on('click', params => {
+            if (params.componentType === 'series') {
+                const point = params.data;
+                document.getElementById('phValue').value = point.ph;
+                document.getElementById('turbidity').value = point.turbidity;
+                
+                // 弹出详情
+                const modal = document.createElement('div');
+                modal.style.cssText = `position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+                                       background:rgba(0,0,0,0.95);padding:30px;border:2px solid #00f2f1;
+                                       border-radius:15px;z-index:1000;color:white;min-width:400px;`;
+                modal.innerHTML = `
+                    <h2>${point.name}</h2>
+                    <p>经度: ${point.value[0]}</p>
+                    <p>纬度: ${point.value[1]}</p>
+                    <p>PH值: ${point.ph}</p>
+                    <p>浊度: ${point.turbidity} NTU</p>
+                    <p>类型: ${point.type}</p>
+                    <button onclick="this.parentElement.remove()" 
+                            style="margin-top:15px;padding:10px 20px;background:#00f2f1;border:none;
+                                   border-radius:5px;cursor:pointer;">关闭</button>
+                `;
+                document.body.appendChild(modal);
+            }
+        });
 
-        // 3. 硝态氮图表
-        const nitrogenChart = echarts.init(document.getElementById('nitrogenChart'));
-        const nitrogenOption = {
-            tooltip: { trigger: 'axis' },
-            legend: { data: ['硝态氮', '亚硝酸'], textStyle: { color: '#fff' } },
-            xAxis: { type: 'category', data: ['样点1', '样点12', '样点23', '样点34', '样点45'] },
-            yAxis: { type: 'value', name: 'mg/L' },
-            series: [
-                {name: '硝态氮', type: 'bar', data: [5.5, 4.4, 3.3, 2.2, 1.1], itemStyle: {color: '#5470c6'}},
-                {name: '亚硝酸', type: 'bar', data: [0.5, 0.4, 0.3, 0.2, 0.1], itemStyle: {color: '#91cc75'}}
-            ]
-        };
-        nitrogenChart.setOption(nitrogenOption);
-
-        // 4. 饼图
+        // ===== 6. 其他图表 =====
         const pieChart = echarts.init(document.getElementById('pieChart'));
-        const pieOption = {
+        const typeCount = {};
+        samplingPoints.forEach(p => {
+            typeCount[p.type] = (typeCount[p.type] || 0) + 1;
+        });
+        pieChart.setOption({
             tooltip: { trigger: 'item' },
             series: [{
                 type: 'pie',
                 radius: '60%',
-                data: [
-                    {value: 18, name: '样点1'},
-                    {value: 15, name: '样点12'},
-                    {value: 12, name: '样点23'},
-                    {value: 9, name: '样点34'}
-                ],
-                itemStyle: { color: function(params) {
-                    const colors = ['#00f2f1', '#00c0ff', '#0066ff', '#00ffcc'];
-                    return colors[params.dataIndex];
-                }}
-            }]
-        };
-        pieChart.setOption(pieOption);
-
-        // 5. 调查问卷柱状图
-        const surveyChart = echarts.init(document.getElementById('surveyChart'));
-        const surveyOption = {
-            tooltip: { trigger: 'axis' },
-            xAxis: { type: 'value', max: 100 },
-            yAxis: { type: 'category', data: ['种植业', '畜禽养殖业', '水产养殖', '其他'] },
-            series: [{
-                type: 'bar',
-                data: [35, 28, 22, 15],
+                data: Object.entries(typeCount).map(([name, value]) => ({name, value})),
                 itemStyle: { color: '#00f2f1' }
             }]
-        };
-        surveyChart.setOption(surveyOption);
-
-        // 响应式调整
-        window.addEventListener('resize', function() {
-            mapChart.resize();
-            tocChart.resize();
-            nitrogenChart.resize();
-            pieChart.resize();
-            surveyChart.resize();
         });
-    </script>// 每5秒随机更新数据
-setInterval(() => {
-    document.getElementById('phValue').value = (Math.random() * 200).toFixed(0);
-}, 5000);
+
+        // ===== 7. 响应式 =====
+        window.addEventListener('resize', () => {
+            mapChart.resize();
+            pieChart.resize();
+        });
+
+        // ===== 8. 自动刷新数据（可选）=====
+        setInterval(() => {
+            // 随机更新一个点的浊度
+            const idx = Math.floor(Math.random() * samplingPoints.length);
+            samplingPoints[idx].turbidity = Math.floor(Math.random() * 200);
+            mapChart.setOption({ series: [{ data: samplingPoints }] });
+        }, 5000);
+    </script>
 </body>
 </html>
